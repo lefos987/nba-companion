@@ -1,4 +1,5 @@
 const webhookHandler = require('./webhook');
+
 module.exports = {
 	webhook: {
 		url: '/webhook',

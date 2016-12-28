@@ -1,9 +1,17 @@
 const request = require('request');
-const GRAPH_API = require('../../config').GRAPH_API;
 const PAGE_ACCESS_TOKEN = require('../../config').PAGE_ACCESS_TOKEN;
 
+const GRAPH_API = {
+	domain: 'https://graph.facebook.com/',
+	version: 'v2.8',
+	endpoints: {
+		messages: '/me/messages'
+	}
+};
+
+
 function constructUrl(endpoint) {
-	return `${GRAPH_API.domain}/${GRAPH_API.version}${endpoint}`;
+	return `${GRAPH_API.domain}${GRAPH_API.version}${endpoint}`;
 }
 
 function callSendAPI(messageData) {
@@ -18,7 +26,7 @@ function callSendAPI(messageData) {
 			if (!error && response.statusCode === 200) {
 				resolve(body);
 			} else {
-				console.log('GRAPH API RESPONSE',response);
+				console.log('GRAPH API RESPONSE', response);
 				reject(error);
 			}
 		});
