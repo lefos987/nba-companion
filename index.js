@@ -5,10 +5,7 @@ const app = express();
 
 app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
-
-app.get('/', (req, res) => {
-	res.send({ niki: 'volou' });
-});
+app.use(express.static('public'));
 
 app.get(routes.webhook.url, routes.webhook.get.handler);
 app.post(routes.webhook.url, routes.webhook.post.handler);
