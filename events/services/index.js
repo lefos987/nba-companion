@@ -38,6 +38,7 @@ function getEventImageUri(event) {
 		gm(homeLogo)
 			.montage(awayLogo)
 			.background('#fff')
+			.resize(42, 42)
 			.write(`${LOGOS_DIR}/${awayTeamId}_at_${homeTeamId}.png`, (err) => {
 				if (err) {
 					console.dir(arguments);
