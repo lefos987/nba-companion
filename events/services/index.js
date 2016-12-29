@@ -1,3 +1,7 @@
+const gm = require('gm').subClass({imageMagick: true});
+const LOGOS_DIR = require('../../config').LOGOS_DIR;
+const DOMAIN = require('../../config').DOMAIN;
+
 function getYesterday() {
 	const today = new Date();
 	const yesterday = new Date(today.setDate(today.getDate() - 1));
@@ -9,20 +13,56 @@ function getYesterday() {
 }
 
 function getEvent(event) {
-	return {
-		title: getTeamNamesFromEvent(event),
-		date: getYesterday(),
-		metadata: {
-			awayTeam: getTeamId(event['away_team']),
-			homeTeam: getTeamId(event['home_team'])
-		}
-	}
-}
-function getTeamNamesFromEvent(event) {
-	const awayTeam = getTeamName(event['away_team']);
-	const homeTeam = getTeamName(event['home_team']);
+	const promises = [
+		getEventTitle(event),
+		getEventImageUri(event),
+		getEventMetadata(event)
+	];
 
-	return `${awayTeam} at ${homeTeam}`;
+	return Promise.all(promises)
+		.then(values => ({
+			title: values[0],
+			imageUri: values[1],
+			date: getYesterday(),
+			metadata: values[2]
+		}));
+}
+
+function getEventImageUri(event) {
+	const awayTeamId = getTeamId(event['away_team']).toUpperCase();
+	const homeTeamId = getTeamId(event['home_team']).toUpperCase();
+	const awayLogo = `${LOGOS_DIR}/${awayTeamId}.png`;
+	const homeLogo = `${LOGOS_DIR}/${homeTeamId}.png`;
+
+	return new Promise((resolve, reject) => {
+		gm(homeLogo)
+			.montage(awayLogo)
+			.background('#fff')
+			.write(`${LOGOS_DIR}/${awayTeamId}_at_${homeTeamId}.png`, (err) => {
+				if (err) {
+					console.dir(arguments);
+					reject(err);
+				}
+
+				resolve(`${DOMAIN}/img/${awayTeamId}_at_${homeTeamId}.png`);
+			});
+
+	});
+}
+
+function getEventMetadata(event) {
+	return {
+		awayTeam: getTeamId(event['away_team']),
+		homeTeam: getTeamId(event['home_team']),
+	};
+}
+
+function getEventTitle(event) {
+	return new Promise((resolve) => {
+		const awayTeam = getTeamName(event['away_team']);
+		const homeTeam = getTeamName(event['home_team']);
+		resolve(`${awayTeam} at ${homeTeam}`);
+	});
 }
 
 function getTeamName(team) {
@@ -32,6 +72,7 @@ function getTeamName(team) {
 function getTeamId(team) {
 	return team.abbreviation;
 }
+
 
 module.exports = {
 	getYesterday,

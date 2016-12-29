@@ -15,46 +15,43 @@ function receivedMessage(event) {
 
 	if (messageText) {
 		events.getEvents()
-			.then((events) => {
+			.then((eventsPromises) => {
 				return new Promise((resolve) => {
-					const elements = events
-						.filter((event, index) => index < 4)
-						.map((event, index) => {
-							const awayTeam = event.metadata.awayTeam.toUpperCase();
-							const homeTeam = event.metadata.homeTeam.toUpperCase();
-							const leaguePassUrl = `${LEAGUE_PASS_URL}/${event.date}/${awayTeam}${homeTeam}`;
+					const elements = eventsPromises
+						.map((eventPromise) => {
+							return eventPromise.then((event) => {
+								const awayTeam = event.metadata.awayTeam.toUpperCase();
+								const homeTeam = event.metadata.homeTeam.toUpperCase();
+								const leaguePassUrl = `${LEAGUE_PASS_URL}/${event.date}/${awayTeam}${homeTeam}`;
 
-							const defaultElement = {
-								title: event.title,
-								subtitle: 'kokoko',
-								default_action: {
-									type: 'web_url',
-									url: leaguePassUrl,
-									webview_height_ratio: 'full'
-								},
-								buttons: [
-									{
-										title: 'Watch Now',
+								return {
+									title: event.title,
+									subtitle: 'kokoko',
+									image_url: event.imageUri,
+									default_action: {
 										type: 'web_url',
 										url: leaguePassUrl,
 										webview_height_ratio: 'full'
-									}
-								]
-							};
-
-							if (index === 0) {
-								return Object.assign({}, defaultElement, {
-									image_url: 'https://www.photojoiner.net/image/aZYIuN5S'
-								});
-							}
-
-							return defaultElement;
+									},
+									buttons: [
+										{
+											title: 'Watch Now',
+											type: 'web_url',
+											url: leaguePassUrl,
+											webview_height_ratio: 'full'
+										}
+									]
+								};
+							});
 						});
 					resolve(elements);
 				});
 			})
-			.then((elements) => {
-				sendButtonMessage(senderID, elements);
+			.then((elementsPromises) => {
+				Promise.all(elementsPromises)
+					.then((elements) => {
+						sendButtonMessage(senderID, elements);
+					});
 			});
 		// sendTextMessage(senderID, messageText);
 
@@ -62,6 +59,7 @@ function receivedMessage(event) {
 }
 
 function sendButtonMessage(recipientId, elements) {
+	console.log('elements', elements);
 	const messageData = {
 		recipient:{
 			id: recipientId

@@ -26,7 +26,7 @@ function callSendAPI(messageData) {
 			if (!error && response.statusCode === 200) {
 				resolve(body);
 			} else {
-				console.log('GRAPH API RESPONSE', response);
+				console.log('GRAPH API RESPONSE', body);
 				reject(error);
 			}
 		});

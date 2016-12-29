@@ -14,9 +14,11 @@ function getEvents() {
 		.then((body) => {
 			const data = JSON.parse(body);
 
-			return data.event.map((event) => {
-				return eventsService.getEvent(event);
-			});
+			return data.event
+				.filter((event, index) => index < 4)
+				.map((event) => {
+					return eventsService.getEvent(event);
+				});
 		}, (err) => {
 			console.log('Error retrieving NBA events', err);
 			return err;
