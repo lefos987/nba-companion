@@ -1,5 +1,6 @@
 const gm = require('gm').subClass({imageMagick: true});
 const LOGOS_DIR = require('../../config').LOGOS_DIR;
+const EVENTS_IMG_DIR = require('../../config').EVENTS_IMG_DIR;
 const DOMAIN = require('../../config').DOMAIN;
 
 function getYesterday() {
@@ -35,18 +36,19 @@ function getEventImageUri(event) {
 	const homeLogo = `${LOGOS_DIR}/${homeTeamId}.png`;
 
 	return new Promise((resolve, reject) => {
-		gm(homeLogo)
-			.append(awayLogo)
+		gm(awayLogo)
+			.append(homeLogo)
 			.append(true)
 			.background('#fff')
 			.resize(42, 42)
-			.write(`${LOGOS_DIR}/${awayTeamId}_at_${homeTeamId}.png`, (err) => {
+			.write(`${EVENTS_IMG_DIR}/${awayTeamId}_at_${homeTeamId}.png`, (err) => {
 				if (err) {
-					console.dir(arguments);
+					console.log('Error creating event image: ', err);
 					reject(err);
+				} else {
+					const eventsImgDir = EVENTS_IMG_DIR.split('public/')[1];
+					resolve(`${DOMAIN}/${eventsImgDir}/${awayTeamId}_at_${homeTeamId}.png`);
 				}
-
-				resolve(`${DOMAIN}/img/${awayTeamId}_at_${homeTeamId}.png`);
 			});
 
 	});
