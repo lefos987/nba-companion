@@ -1,4 +1,4 @@
 .idea/
 node_modules/
-public/img/events/
+public/img/events/*.png
 .DS_Store

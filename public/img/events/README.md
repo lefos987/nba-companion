@@ -1,0 +1,1 @@
+This is required so gm can actually create the images in this directory
