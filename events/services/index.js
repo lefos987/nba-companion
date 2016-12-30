@@ -36,7 +36,8 @@ function getEventImageUri(event) {
 
 	return new Promise((resolve, reject) => {
 		gm(homeLogo)
-			.montage(awayLogo)
+			.append(awayLogo)
+			.append(true)
 			.background('#fff')
 			.resize(42, 42)
 			.write(`${LOGOS_DIR}/${awayTeamId}_at_${homeTeamId}.png`, (err) => {

@@ -9,20 +9,11 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.get('/lefos', function (req, res, next) {
-	console.log('kokoko');
-	// gm('./public/img/pjimage.jpg')
-	// 	.resize(240, 240)
-	// 	.noProfile()
-	// 	.write('./public/img/resize1.png', function (err) {
-	// 		if (!err) {
-	// 			console.log('done');
-	// 			res.sendStatus(200);
-	// 		}
-	// 	});
-
 	gm('./public/img/IND.png')
-		.montage('./public/img/WAS.png')
+		.append('./public/img/WAS.png')
+		.append(true)
 		.background('#fff')
+		.resize(42, 42)
 		.write('./public/img/append.png', function (err) {
 			if (err) return console.dir(arguments);
 			console.log(this.outname + " created  ::  " + arguments[3]);
